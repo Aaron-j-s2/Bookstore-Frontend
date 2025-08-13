@@ -87,7 +87,7 @@ function Profile() {
             const reqBody = new FormData()
             // reqBody.append("title",title)
             for (let key in bookDetails){
-               if(key != UploadedImages){
+               if(key != "UploadedImages"){
                  reqBody.append(key,bookDetails[key])
                }
                else{

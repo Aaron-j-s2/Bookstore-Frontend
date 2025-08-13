@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import Footer from '../../Components/Footer'
 import './Home.css'
@@ -6,13 +6,16 @@ import { Button } from 'flowbite-react'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Card } from "flowbite-react";
 import { getHomeBookAPI } from '../../services/allAPIs'
-import { Link } from 'react-router-dom'
-
+import { Link, useNavigate } from 'react-router-dom'
+import { SearchContext } from '../../context/SearachContextShare';
 
 
 function Home() {
+  const navigate=useNavigate()
   //to hold home books
   const [homeBooks,setHomeBooks]=useState([])
+  const { searchKey, setSearchKey } = useContext(SearchContext);
+    console.log(searchKey);
 
   const getHomeBooks=async()=>{
 
@@ -28,18 +31,43 @@ function Home() {
 
   }
 console.log(homeBooks);
+  
+
+const handleSearch=()=>{
 
   
+  const token=sessionStorage.getItem("token")
+  if(searchKey==""){
+    alert("please enter the book title")
+  }
+  else if(!token){
+    alert('Please Login')
+    navigate('/login')
+
+  }
+  else if(searchKey &&  token){
+    navigate('/allbooks')
+
+  }
+  else{
+    alert('something went wrong')
+  }
+
+  }
+
+
 
   useEffect(() => {
     getHomeBooks();
   }, []);
 
+  
+
   return (
     <>
       <Header />
 
-      <section id="banner" className="bg-[url('https://images.pexels.com/photos/7978207/pexels-photo-7978207.jpeg')] bg-cover bg-center bg-fixed h-[620px]"
+      <section id="banner" className="bg-[url('https://images.pexels.com/photos/7978207/pexels-photo-7978207.jpeg')] bg-cover bg-center bg-fixed h-[685px]"
       >
         <div className='text-center pt-20'>
           <h1 className='text-6xl text-white hover:text-amber-200'>Stories live here—come find yours</h1>
@@ -48,13 +76,13 @@ console.log(homeBooks);
           <div className='flex justify-center gap-5 '>
 
             <div>
-              <input placeholder="Choose your book..." id="input" className="input  text-xl  " name="text" type="text"></input>
+              <input placeholder="Choose your book..."  onChange={e=>setSearchKey(e.target.value)} value={searchKey}  id="input" className="input  text-xl  " name="text" type="text"></input>
 
             </div>
 
             <div>
-              <button className="bg-white text-black p-4 rounded-full shadow-md hover:bg-gray-200 transition">
-                <MagnifyingGlassIcon className="h-5 w-5" />
+              <button onClick={handleSearch} className="bg-white flex text-black px-3 py-3 rounded-full shadow-md hover:bg-gray-200 transition">
+                search <MagnifyingGlassIcon className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -76,12 +104,12 @@ console.log(homeBooks);
 
 
 {
-  homeBooks.length>0 ? homeBooks.map(item=>(
+  homeBooks ? homeBooks.map(item=>(
 
     <div > 
       
             <Card
-              className="flex ms-10 flex-wrap w-70 text-center !bg-amber-800 !border-white">
+              className="flex ms-10 flex-wrap w-70 h-110 text-center !bg-amber-800 !border-white">
 
               <img src={item.imageUrl} alt="" className='ps-4' width={200} />
               <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">

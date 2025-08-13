@@ -1,19 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Card } from "flowbite-react";  
 import Header from '../Components/Header';
 import { getAllBookAPI } from '../../services/allAPIs';
+import { Link } from 'react-router-dom';
+import { SearchContext } from '../../context/SearachContextShare';
+
 
 
 function AllBooks() {
 
+  const { searchKey, setSearchKey } = useContext(SearchContext);
+  console.log(searchKey);
+  
+
    const [allBooks,setAllBooks]=useState([])
-  
-    const getAllBooks=async()=>{
-  
+   const[token,setToken]=useState('')
+   //to hold temp books data
+   const [tempData, setTempData] = useState([]);
+
+    const getAllBooks=async(token,searchKey)=>{
+
+       const reqHeader = {
+                Authorization : `Bearer ${token}`
+            }
+   
       try {
-        const result =await getAllBookAPI();
-        console.log(result);
-        setAllBooks(result.data)
+             
+   
+             const result=await getAllBookAPI(searchKey,reqHeader)
+
+            console.log(result);
+            setAllBooks(result.data)
+            setTempData(result.data)
+             
         
       } catch (err) {
         console.log(err);
@@ -22,13 +41,50 @@ function AllBooks() {
   
     }
   console.log(allBooks);
-  console.log(allBooks.imageUrl);
+
+  const handleFilter=(data)=>{
+    console.log(data);
+
+
+    if(data=='No-filter'){
+      setAllBooks(tempData)
+    }
+    else{
+      //toLowerCase() to convert lower case ,trim- remove space
+    // tempData.filter(item=>(item.category).toLowerCase().trim()==data.toLowerCase().trim())
+    setAllBooks(tempData.filter(item=>(item.category).toLowerCase().trim()==data.toLowerCase().trim()))
+    console.log(AllBooks);
+    }
+   
+    
+  }
+
   
     
   
-    useEffect(() => {
-      getAllBooks();
-    }, []);
+   
+
+   useEffect(() => {
+  const Token = sessionStorage.getItem("token");
+  if (Token) {
+    setToken(Token);  
+    
+  }
+
+ 
+}, []);
+
+useEffect(() => {
+ 
+  if (token) {
+    
+    getAllBooks(token, searchKey)
+  }
+
+ 
+}, [token,searchKey]);
+console.log(token);
+
 
   return (
 
@@ -46,7 +102,8 @@ function AllBooks() {
       <input
         type="text"
         placeholder="Search By Title"
-        className="w-full p-2 focus:outline-none"
+        value={searchKey}
+        className="w-full p-2 focus:outline-none" onChange={e=>setSearchKey(e.target.value)}
       />
       <button className="bg-amber-900 text-white px-4">search</button>
     </div>
@@ -59,39 +116,39 @@ function AllBooks() {
       <h2 className="text-3xl text-amber-900 font-semibold mb-4">Filters</h2>
       <form className="space-y-3">
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Literary Fiction')} name="filter" className="accent-black" />
           <label className="">Literary Fiction</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Philosophy')} name="filter" className="accent-black" />
           <label className="">Philosophy</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Thriller')} name="filter" className="accent-black" />
           <label className="">Thriller</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Romance')} name="filter" className="accent-black" />
           <label className="">Romance</label>
         </div>
         <div className="flex items-center space-x-2  ">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Horror')} name="filter" className="accent-black" />
           <label className="">Horror</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Auto/Biography')} name="filter" className="accent-black" />
           <label className="">Auto/Biography</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Self-Help')} name="filter" className="accent-black" />
           <label className="">Self-Help</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('Politics')} name="filter" className="accent-black" />
           <label className="">Politics</label>
         </div>
         <div className="flex items-center space-x-2 text-xl">
-          <input type="radio" name="filter" className="accent-black" />
+          <input type="radio" onClick={()=>handleFilter('No-filter')} name="filter" className="accent-black" />
           <label className="">No-filter</label>
         </div>
       </form>
@@ -99,14 +156,14 @@ function AllBooks() {
 
     {/* Right content (optional) */}
     <div className="w-full ">
-      <div className=' gap-6 grid grid-cols-3 gap-4 '>
+      <div className=' grid grid-cols-3 gap-4 '>
                 
       
       
       
                 {
                   allBooks.length > 0 ?  allBooks.map(item=>(
-                    <div >
+                  <Link to={`/viewBook/${item._id}`}>  <div hidden={item.status=='pending'|| item ?.status =='sold'}>
                   <Card
                     className="flex flex-wrap w-70 text-center !bg-orange-300 !border-white">
       
@@ -115,10 +172,10 @@ function AllBooks() {
                       {item.title}
                     </h5>
                     <p className="text-white text-xl">
-                      Price:{item.dprice}rs
+                      Price:{item.discount_price}rs
                     </p>
                   </Card>
-                </div> 
+                </div> </Link> 
 
                   ))
                    :    'no books'           

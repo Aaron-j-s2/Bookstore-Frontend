@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 function AdminSidebar() {
   return (
     <div>
-       <Card className="h-200  w-50 p-4 shadow-xl text-white bg-amber-950 justify-items-center">
+       <Card className="h-full  w-50 p-4 shadow-xl text-white bg-amber-950 justify-items-center">
       <div className="mb-2 p-4  ">
         
           <img src="https://icon-library.com/images/admin-icon-png/admin-icon-png-18.jpg" alt="" width={130} />

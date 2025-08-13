@@ -68,7 +68,7 @@ function Header() {
  </div>
   
   :
-  <Link to={'/login'}>
+  <Link to='/login'>
         <Button className='p-5 text-xl !bg-amber-100 text-amber-950'>Login <IoMdLogIn className='text-4xl ms-3'/></Button>
 
 </Link>

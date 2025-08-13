@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import SearachContextShare from './context/SearachContextShare.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -11,7 +12,11 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
 
     <GoogleOAuthProvider clientId="948034016695-m764juuc2qdji6ec7a3m1avhg4pk1lft.apps.googleusercontent.com">
-      <App />
+      <SearachContextShare> 
+<App />
+
+      </SearachContextShare>
+     
       
       </GoogleOAuthProvider>
     
